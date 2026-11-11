@@ -133,16 +133,28 @@ feeds that account has; the cookie never appears in a response, a log line or a 
 ```bash
 git clone https://github.com/mphinance/momentum-mcp.git
 cd momentum-mcp
+
+# uv: pyproject.toml declares [tool.uv] override-dependencies = ["numba>=0.62"],
+# which replaces pandas-ta's hard numba==0.61.2 pin during resolution.
+uv add -r requirements.txt      # or, with dependencies already declared: uv sync
+```
+
+pip fallback (same environment, without uv):
+
+```bash
 python3 -m venv .venv
 source .venv/bin/activate
-# Three-step install: pandas-ta hard-pins numba==0.61.2 which doesn't support
-# Python 3.14, so we install it separately and override numba.
+# pandas-ta hard-pins numba==0.61.2, so install it without deps and add numba separately.
 pip install fastmcp tradingview-screener yfinance pandas mplfinance matplotlib feedparser trafilatura scipy tradingview-ta chromadb requests httpx
 pip install pandas-ta --no-deps
 pip install 'numba>=0.62'
 ```
 
-> **Why three steps?** `pandas-ta==0.4.71b0` declares `numba==0.61.2` as a hard dependency, but that `numba` version only supports Python `<3.14`. Installing `pandas-ta` with `--no-deps` skips the pin, and `numba>=0.62` (which has Python 3.14 wheels) is fully compatible at runtime — verified working.
+> **Why the override?** `pandas-ta==0.4.71b0` declares `numba==0.61.2` as a hard dependency, but that
+> `numba` version only ships wheels for Python `<3.14`. With `numba>=0.62` required, normal resolution
+> is unsatisfiable (`numba==0.61.2` vs `numba>=0.62`), so uv overrides the pin and pip uses `--no-deps`.
+> pandas-ta only calls stable `numba.njit` APIs; verified working with numba 0.62.1 and 0.68.1 on
+> Python 3.13 (SMA/RSI/MACD/WMA/ZigZag/ATR/Supertrend/Hekin-Ashi).
 
 Test that everything works:
 

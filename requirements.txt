@@ -15,7 +15,9 @@ pandas>=2.0
 
 # Technical analysis indicators
 # NOTE: pandas-ta hard-pins numba==0.61.2 which doesn't support Python 3.14.
-# Install with --no-deps and use numba>=0.62 instead (verified compatible).
+# `uv add -r requirements.txt` works via [tool.uv] override-dependencies in
+# pyproject.toml; plain pip needs `pip install pandas-ta --no-deps` instead.
+# numba>=0.62 is runtime-compatible (verified with 0.62.1 and 0.68.1).
 pandas-ta>=0.3
 numba>=0.62
 

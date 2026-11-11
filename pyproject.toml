@@ -1,0 +1,34 @@
+[project]
+name = "momentum-mcp"
+version = "0.1.0"
+description = "MCP server exposing quantitative trading tools (screening, technicals, news, options, backtests)"
+readme = "README.md"
+authors = [
+    { name = "eshyun", email = "eshyun@gmail.com" }
+]
+requires-python = ">=3.13"
+dependencies = [
+    "chromadb>=1.0",
+    "fastmcp>=3.0",
+    "feedparser>=6.0",
+    "httpx>=0.27",
+    "matplotlib>=3.7",
+    "mplfinance>=0.12",
+    "numba>=0.62",
+    "pandas>=2.0",
+    "pandas-ta>=0.3",
+    "pytest>=8.0",
+    "requests>=2.31",
+    "scipy>=1.10",
+    "six>=1.17.0",
+    "tradingview-screener>=3.0",
+    "tradingview-ta>=3.3",
+    "trafilatura>=2.0",
+    "yfinance>=0.2",
+]
+
+[tool.uv]
+# pandas-ta hard-pins numba==0.61.2 (no Python 3.14 wheels). Override it so
+# `uv add -r requirements.txt` / `uv sync` can resolve numba>=0.62.
+override-dependencies = ["numba>=0.62"]
+
