@@ -134,9 +134,11 @@ feeds that account has; the cookie never appears in a response, a log line or a 
 git clone https://github.com/mphinance/momentum-mcp.git
 cd momentum-mcp
 
-# uv: pyproject.toml declares [tool.uv] override-dependencies = ["numba>=0.62"],
-# which replaces pandas-ta's hard numba==0.61.2 pin during resolution.
-uv add -r requirements.txt      # or, with dependencies already declared: uv sync
+# uv: pyproject.toml declares the dependencies plus [tool.uv]
+# override-dependencies = ["numba>=0.62"], which replaces pandas-ta's hard
+# numba==0.61.2 pin during resolution.
+uv sync
+uv run python -m mcp_server.server
 ```
 
 pip fallback (same environment, without uv):
@@ -155,6 +157,12 @@ pip install 'numba>=0.62'
 > is unsatisfiable (`numba==0.61.2` vs `numba>=0.62`), so uv overrides the pin and pip uses `--no-deps`.
 > pandas-ta only calls stable `numba.njit` APIs; verified working with numba 0.62.1 and 0.68.1 on
 > Python 3.13 (SMA/RSI/MACD/WMA/ZigZag/ATR/Supertrend/Hekin-Ashi).
+>
+> **Python 3.13 or 3.14 only.** `chromadb` depends on `onnxruntime`, and
+> `onnxruntime==1.31.1` publishes wheels for `cp313`/`cp314` only. On 3.15 `uv sync` fails with
+> *"Distribution `onnxruntime` can't be installed because it doesn't have a source distribution or
+> wheel for the current platform"*. `requires-python` is `<3.15` and `.python-version` pins 3.14
+> (verified: chromadb 1.5.9, numba 0.68.1, onnxruntime 1.31.1, 201 tests passing).
 
 Test that everything works:
 
